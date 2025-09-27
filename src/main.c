@@ -2,6 +2,10 @@
 #include "include/lexer.h"
 
 int main() {
+
+	//lol moment
+	//lol moment 2
+
 	char* contents = "";
 	lexer_T* lexer = initLexer(
 		"var name = \"Skibidi Toilet\";\n"
