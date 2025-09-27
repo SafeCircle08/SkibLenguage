@@ -1,0 +1,3 @@
+var name = "Skibidi Toilet";
+
+print(name);
