@@ -14,7 +14,9 @@ typedef struct TOKENS_STRUCT
         TOKEN_ADR,
         TOKEN_EXCL,
         TOKEN_INTER,
-        TOKEN_QUOTE
+        TOKEN_QUOTE,
+        TOKEN_COMMA,
+        TOKEN_EOF
     } type;
 
     char* value;

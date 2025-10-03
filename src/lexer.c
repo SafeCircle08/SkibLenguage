@@ -73,7 +73,9 @@ token_T* lexerGetNextToken(lexer_T* lexer) {
             case '*': return lexerAdvanceWithToken(lexer, initToken(TOKEN_PTR, lexerGetCurrentCharAsString(lexer))); break;
             case '!': return lexerAdvanceWithToken(lexer, initToken(TOKEN_EXCL, lexerGetCurrentCharAsString(lexer))); break;
             case '?': return lexerAdvanceWithToken(lexer, initToken(TOKEN_INTER, lexerGetCurrentCharAsString(lexer))); break;
-            default: return (void*)0;
+            case ',': return lexerAdvanceWithToken(lexer, initToken(TOKEN_COMMA, lexerGetCurrentCharAsString(lexer))); break;
+
+            default: return initToken(TOKEN_EOF, '\0');;
         }
     }
 }

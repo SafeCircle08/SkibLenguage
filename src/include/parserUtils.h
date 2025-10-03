@@ -4,4 +4,6 @@
 bool parserTypeIsTheWanted(parser_T* parser, int tokenType);
 void parserGetNextToken(parser_T* parser);
 
+void parserSetPrevToken(parser_T* parser);
+
 #endif
