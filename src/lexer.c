@@ -23,6 +23,10 @@ bool lexerActualCharIsAlnum(const lexer_T* lexer) {
     return isalnum(lexer->c);
 }
 
+bool lexerNextCharIs(const lexer_T* lexer,const char c) {
+    return (lexer->c == c);
+}
+
 //----------------------------------------------------------------------------------
 
 lexer_T* initLexer(char* contents) {
@@ -66,6 +70,9 @@ token_T* lexerGetNextToken(lexer_T* lexer) {
             case ';': return lexerAdvanceWithToken(lexer, initToken(TOKEN_SEMI, lexerGetCurrentCharAsString(lexer))); break;
             case '(': return lexerAdvanceWithToken(lexer, initToken(TOKEN_LPAREN, lexerGetCurrentCharAsString(lexer))); break;
             case ')': return lexerAdvanceWithToken(lexer, initToken(TOKEN_RPAREN, lexerGetCurrentCharAsString(lexer))); break;
+            case '*': return lexerAdvanceWithToken(lexer, initToken(TOKEN_PTR, lexerGetCurrentCharAsString(lexer))); break;
+            case '!': return lexerAdvanceWithToken(lexer, initToken(TOKEN_EXCL, lexerGetCurrentCharAsString(lexer))); break;
+            case '?': return lexerAdvanceWithToken(lexer, initToken(TOKEN_INTER, lexerGetCurrentCharAsString(lexer))); break;
             default: return (void*)0;
         }
     }

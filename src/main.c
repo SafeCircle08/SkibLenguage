@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "include/lexer.h"
+#include "include/parser.h"
 
 int main() {
 
@@ -10,13 +11,13 @@ int main() {
 	lexer_T* lexer = initLexer(
 		"var name = \"Skibidi Toilet\";\n"
 		"print(name);\n"
+		"or;"
 	);
 
-	token_T* token = (void*)0;
+	parser_T* parser = initParser(lexer);
+	AST_T* source = parserParse(parser);
 
-	while ((token = lexerGetNextToken(lexer)) != (void*)0) {
-		printf("TOKEN(%d, %s)\n", token->type, token->value);
-	}
-
+	printf("Root value: %d\n", source->type);
+	printf("Root size: %llu\n", source->compoundSize);
 	return 0;
 }

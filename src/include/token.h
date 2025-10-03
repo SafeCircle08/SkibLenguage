@@ -9,7 +9,12 @@ typedef struct TOKENS_STRUCT
         TOKEN_STRING,
         TOKEN_EQUALS,
         TOKEN_LPAREN,
-        TOKEN_RPAREN
+        TOKEN_RPAREN,
+        TOKEN_PTR,
+        TOKEN_ADR,
+        TOKEN_EXCL,
+        TOKEN_INTER,
+        TOKEN_QUOTE
     } type;
 
     char* value;
