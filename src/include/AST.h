@@ -9,7 +9,8 @@ typedef struct AST_STRUCT {
         AST_VARIABLE_DEF,
         AST_FUNCTION_CALL,
         AST_STRING,
-        AST_COMPOUND //list of statements
+        AST_COMPOUND, //list of statements
+        AST_NOOP
     } type;
 
     /*  VARIABLE DEFINITION */

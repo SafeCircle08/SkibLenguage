@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "include/lexer.h"
 #include "include/parser.h"
+#include "include/visitor.h"
 
 int main() {
 
@@ -9,12 +10,15 @@ int main() {
 
 	char* contents = "";
 	lexer_T* lexer = initLexer(
-		"var name = \"Skibidi Toilet\";\n"
-		"print(name);\n"
+		"var name = \"Michele\";\n"
+		"var namesecond = \"Skibidino\";\n"
+		"print(name, names3cond);\n"
 	);
 
 	parser_T* parser = initParser(lexer);
 	AST_T* source = parserParse(parser);
+	visitor_T* visitor = initVisitor();
+	visitorVisit(visitor, source);
 
 	return 0;
 }

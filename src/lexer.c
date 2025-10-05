@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdio.h>
 
 //---------------------------------UTILS--------------------------------------------
 
@@ -75,7 +76,7 @@ token_T* lexerGetNextToken(lexer_T* lexer) {
             case '?': return lexerAdvanceWithToken(lexer, initToken(TOKEN_INTER, lexerGetCurrentCharAsString(lexer))); break;
             case ',': return lexerAdvanceWithToken(lexer, initToken(TOKEN_COMMA, lexerGetCurrentCharAsString(lexer))); break;
 
-            default: return initToken(TOKEN_EOF, '\0');;
+            default: return initToken(TOKEN_EOF, NULL);
         }
     }
 }

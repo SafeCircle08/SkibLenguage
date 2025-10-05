@@ -1,9 +1,9 @@
 #include "include/parser.h"
 #include "include/parserUtils.h"
+#include "include/error.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 /*------------------- PARSER UTILS -------------------*/
 bool parserTypeIsTheWanted(parser_T* parser, int tokenType) {
     return (parser->currentToken->type == tokenType);
@@ -30,7 +30,6 @@ parser_T* initParser(lexer_T* lexer) {
 
 void parserEatExpectedToken(parser_T* parser, int tokenType) {
     if (parserTypeIsTheWanted(parser, tokenType)) {
-        printf("\nToken: %d", parser->currentToken->type);
         parserSetPrevToken(parser);
         parserGetNextToken(parser);
     } else {
@@ -48,16 +47,9 @@ AST_T* parserParse(parser_T* parser) {
 }
 
 AST_T* parserParseStatement(parser_T* parser) {
-    if (parser->currentToken->type == TOKEN_EOF) {
-        printf("\n");
-        printf("****************************************\n");
-        printf("REACHED SUCCESSFULLY THE END OF THE FILE\nGiven null pointer: [ %p ]\n", parser->currentToken);
-        printf("****************************************\n");
-        printf("\n");
-    }
     switch (parser->currentToken->type) {
         case TOKEN_ID: return parserParseId(parser);
-        default: return (void*)0;
+        default: return initAST(AST_NOOP);
     }
 }
 
@@ -68,22 +60,21 @@ AST_T* parserParseStatements(parser_T* parser) {
 
     AST_T* astStatement = parserParseStatement(parser);
     compound->compoundValue[0] = astStatement;
+    compound->compoundSize++;
 
     while (parserTypeIsTheWanted(parser, TOKEN_SEMI)) {
         parserEatExpectedToken(parser, TOKEN_SEMI);
 
-        printf("\n");
-        printf("*************** Eaten statement number %llu ***************", compound->compoundSize);
-        printf("\n");
-        printf("\n");
-
+        //----------------------------------
         AST_T* astStatement = parserParseStatement(parser);
-        compound->compoundSize++;
-        compound->compoundValue = realloc(
-            compound->compoundValue,
-            compound->compoundSize * sizeof(AST_T*)
-        );
-        compound->compoundValue[compound->compoundSize - 1] = astStatement;
+        if (astStatement) {
+            compound->compoundSize++;
+            compound->compoundValue = realloc(
+                compound->compoundValue,
+                compound->compoundSize * sizeof(AST_T*)
+            );
+            compound->compoundValue[compound->compoundSize - 1] = astStatement;
+        }
     }
     return compound;
 }
@@ -136,12 +127,14 @@ AST_T* parserParseFunctionCall(parser_T* parser) {
     AST_T* funcCallNode = initAST(AST_FUNCTION_CALL);
     char* funcName = parser->prevToken->value;
     funcCallNode->functionDefName = funcName;
-    funcCallNode->functionDefArgs = calloc(1, sizeof(AST_T*));
 
     parserEatExpectedToken(parser, TOKEN_LPAREN);
 
+    funcCallNode->functionDefArgs = calloc(1, sizeof(AST_T*));
+
     AST_T* astExpr = parserParseExpr(parser);
     funcCallNode->functionDefArgs[0] = astExpr;
+    funcCallNode->functionDefArgsSize++;
 
     while (parserTypeIsTheWanted(parser, TOKEN_COMMA)) {
         parserEatExpectedToken(parser, TOKEN_COMMA);
@@ -162,7 +155,7 @@ AST_T* parserParseExpr(parser_T* parser) {
     switch (parser->currentToken->type) {
         case TOKEN_STRING: return parserParseString(parser);
         case TOKEN_ID: return parserParseId(parser);
-        default: return (void*)0;
+        default: return initAST(AST_NOOP);
     }
 }
 
