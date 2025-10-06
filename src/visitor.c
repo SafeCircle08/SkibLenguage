@@ -1,5 +1,6 @@
 #include "include/visitor.h"
 #include "include/error.h"
+#include "include/builtInStringUtils.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,7 +12,14 @@ static AST_T* builtInPrintMethod(visitor_T* visitor, AST_T** arguments, int argu
     for (int i = 0; i < argumentsN; i++) {
         AST_T* visitedArg = visitorVisit(visitor, arguments[i]);
         switch (visitedArg->type) {
-            case AST_STRING: printf("%s\n", visitedArg->stringValue); break;
+            case AST_STRING:
+                if (endsWithBreakLine(visitedArg->stringValue)) {
+                    visitedArg->stringValue = terminateStringBeforeBr(visitedArg->stringValue);
+                    printf("%s\n", visitedArg->stringValue);
+                } else {
+                    printf("%s", visitedArg->stringValue);
+                }
+                break;
             default: error("<<<< Invalid datatype error >>>>\n", true);
         }
     }
@@ -69,13 +77,15 @@ AST_T* visitorVisitVar(visitor_T* visitor, AST_T* node) {
             return visitorVisit(visitor, vardef->variableDefValue);
         }
     }
-    const char* RED = "\x1b[31m";    // rosso
-    const char* RESET = "\x1b[0m";
-    printf("%s<<< Variable ' %s ' >>> is not defined.%s\n", RED, node->variableName, RESET);
-    error("<<<<!!!!! WARNING:: -> FATAL ERROR SUPER HARD TO RESOLVE (undefined variable) <- !!!!!>>>>\n", true);
+
+    if (node->type == AST_VARIABLE) {
+        const char* RED = "\x1b[31m";    // rosso
+        const char* RESET = "\x1b[0m";
+        printf("%s<<< Variable ' %s ' >>> is not defined.%s\n", RED, node->variableName, RESET);
+        error("<<<<!!!!! WARNING:: -> FATAL ERROR SUPER HARD TO RESOLVE (undefined variable) <- !!!!!>>>>\n", true);
+    }
     return node;
 }
-
 
 
 AST_T* visitorVisitFunctionCall(visitor_T* visitor, AST_T* node) {
@@ -87,7 +97,6 @@ AST_T* visitorVisitFunctionCall(visitor_T* visitor, AST_T* node) {
     error("<<<< Undefined method error with name: ' ", false);
     printf("%s", node->functionDefName);
     error(" ' >>>>\n", true);
-
 }
 
 AST_T* visitorVisitString(visitor_T* visitor, AST_T* node) {

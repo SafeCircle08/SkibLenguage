@@ -75,7 +75,7 @@ token_T* lexerGetNextToken(lexer_T* lexer) {
             case '!': return lexerAdvanceWithToken(lexer, initToken(TOKEN_EXCL, lexerGetCurrentCharAsString(lexer))); break;
             case '?': return lexerAdvanceWithToken(lexer, initToken(TOKEN_INTER, lexerGetCurrentCharAsString(lexer))); break;
             case ',': return lexerAdvanceWithToken(lexer, initToken(TOKEN_COMMA, lexerGetCurrentCharAsString(lexer))); break;
-
+            
             default: return initToken(TOKEN_EOF, NULL);
         }
     }
@@ -104,7 +104,6 @@ token_T* lexerCollectString(lexer_T* lexer) {
 token_T* lexerCollectID(lexer_T* lexer) {
     char* parseID = calloc(1, sizeof(char));
     parseID[0] = '\0';
-
     while (lexerActualCharIsAlnum(lexer)) {
         char* c = lexerGetCurrentCharAsString(lexer);
         parseID = realloc(parseID, (strlen(parseID) + strlen(c) + 1) * sizeof(char));

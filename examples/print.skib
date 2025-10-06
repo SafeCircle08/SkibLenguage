@@ -1,0 +1,4 @@
+var fileName = "print";
+var toPrintVar = "556";
+print("Executed a print file!\n", "The variable printed is: ", toPrintVar, "\n");
+print("lol", "\n");

@@ -62,9 +62,15 @@ AST_T* parserParseStatements(parser_T* parser) {
     compound->compoundValue[0] = astStatement;
     compound->compoundSize++;
 
+    //The first check after the first statement is parsed
+    if (!parserTypeIsTheWanted(parser, TOKEN_SEMI)) {
+        printf("Forgot a ';' somewhere...\n");
+        exit(-1);
+    }
+
+    //While it finds semis
     while (parserTypeIsTheWanted(parser, TOKEN_SEMI)) {
         parserEatExpectedToken(parser, TOKEN_SEMI);
-
         //----------------------------------
         AST_T* astStatement = parserParseStatement(parser);
         if (astStatement) {
@@ -75,6 +81,14 @@ AST_T* parserParseStatements(parser_T* parser) {
             );
             compound->compoundValue[compound->compoundSize - 1] = astStatement;
         }
+    }
+
+    //If it doesnt find semi, it means the prev token is not semi, so it
+    //exit the program (error)
+    if (parser->prevToken->type != TOKEN_SEMI) {
+        printf("prev token: %d\n", parser->prevToken->type);
+        printf("Forgot a ';' somewhere...\n");
+        exit(-1);
     }
     return compound;
 }
@@ -104,7 +118,6 @@ AST_T* parserParseVarDef(parser_T* parser) {
 
 AST_T* parserParseVariable(parser_T* parser) {
     char* varName = parser->currentToken->value;
-
     parserEatExpectedToken(parser, TOKEN_ID);
     if (parserTypeIsTheWanted(parser, TOKEN_LPAREN)) {
         return parserParseFunctionCall(parser);
@@ -119,7 +132,6 @@ AST_T* parserParseString(parser_T* parser) {
     AST_T* astString = initAST(AST_STRING);
     astString->stringValue = parser->currentToken->value;
     parserEatExpectedToken(parser, TOKEN_STRING);
-
     return astString;
 }
 
@@ -155,7 +167,12 @@ AST_T* parserParseExpr(parser_T* parser) {
     switch (parser->currentToken->type) {
         case TOKEN_STRING: return parserParseString(parser);
         case TOKEN_ID: return parserParseId(parser);
-        default: return initAST(AST_NOOP);
+        default:
+            const char* GREEN = "\x1b[31m";
+            const char* RESET = "\x1b[0m";
+            printf("%sInvalid expression!\nBecause of token type <%d>!%s\n", GREEN, parser->prevToken->type,RESET);
+            exit(1); //be careful here
+            return initAST(AST_NOOP);
     }
 }
 
