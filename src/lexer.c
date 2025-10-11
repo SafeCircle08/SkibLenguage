@@ -9,7 +9,7 @@
 //---------------------------------UTILS--------------------------------------------
 
 bool lexerCanAdvance(const lexer_T* lexer) {
-    return ((lexer->c != '0') && (lexer->i < strlen(lexer->contents)));
+    return ((lexer->c != '\0') && (lexer->i < strlen(lexer->contents)));
 }
 
 bool lexerActualCharIsWhiteSpace(const lexer_T* lexer) {
@@ -26,6 +26,12 @@ bool lexerActualCharIsAlnum(const lexer_T* lexer) {
 
 bool lexerNextCharIs(const lexer_T* lexer,const char c) {
     return (lexer->c == c);
+}
+
+bool lexerActualCharIsNum(const lexer_T* lexer) {
+    char value = lexer->c;
+    if (value >= '0' && value <= '9') { return true; }
+    return false;
 }
 
 //----------------------------------------------------------------------------------
@@ -58,6 +64,10 @@ token_T* lexerGetNextToken(lexer_T* lexer) {
             lexerSkipWhiteSpace(lexer);
         }
 
+        if (lexerActualCharIsNum(lexer)) {
+            return lexerCollectNumber(lexer);
+        }
+
         if (lexerActualCharIsAlnum(lexer)) {
             return lexerCollectID(lexer);
         }
@@ -67,18 +77,34 @@ token_T* lexerGetNextToken(lexer_T* lexer) {
         }
 
         switch (lexer->c) {
-            case '=': return lexerAdvanceWithToken(lexer, initToken(TOKEN_EQUALS, lexerGetCurrentCharAsString(lexer))); break;
-            case ';': return lexerAdvanceWithToken(lexer, initToken(TOKEN_SEMI, lexerGetCurrentCharAsString(lexer))); break;
-            case '(': return lexerAdvanceWithToken(lexer, initToken(TOKEN_LPAREN, lexerGetCurrentCharAsString(lexer))); break;
-            case ')': return lexerAdvanceWithToken(lexer, initToken(TOKEN_RPAREN, lexerGetCurrentCharAsString(lexer))); break;
-            case '*': return lexerAdvanceWithToken(lexer, initToken(TOKEN_PTR, lexerGetCurrentCharAsString(lexer))); break;
-            case '!': return lexerAdvanceWithToken(lexer, initToken(TOKEN_EXCL, lexerGetCurrentCharAsString(lexer))); break;
-            case '?': return lexerAdvanceWithToken(lexer, initToken(TOKEN_INTER, lexerGetCurrentCharAsString(lexer))); break;
-            case ',': return lexerAdvanceWithToken(lexer, initToken(TOKEN_COMMA, lexerGetCurrentCharAsString(lexer))); break;
-            
+            case '=': return lexerAdvanceWithToken(lexer, initToken(TOKEN_EQUALS, lexerGetCurrentCharAsString(lexer)));
+            case ';': return lexerAdvanceWithToken(lexer, initToken(TOKEN_SEMI, lexerGetCurrentCharAsString(lexer)));
+            case '(': return lexerAdvanceWithToken(lexer, initToken(TOKEN_LPAREN, lexerGetCurrentCharAsString(lexer)));
+            case ')': return lexerAdvanceWithToken(lexer, initToken(TOKEN_RPAREN, lexerGetCurrentCharAsString(lexer)));
+            case '*': return lexerAdvanceWithToken(lexer, initToken(TOKEN_PTR, lexerGetCurrentCharAsString(lexer)));
+            case '!': return lexerAdvanceWithToken(lexer, initToken(TOKEN_EXCL, lexerGetCurrentCharAsString(lexer)));
+            case '?': return lexerAdvanceWithToken(lexer, initToken(TOKEN_INTER, lexerGetCurrentCharAsString(lexer)));
+            case ',': return lexerAdvanceWithToken(lexer, initToken(TOKEN_COMMA, lexerGetCurrentCharAsString(lexer)));
+            case '+': return lexerAdvanceWithToken(lexer, initToken(TOKEN_PLUS, lexerGetCurrentCharAsString(lexer)));
             default: return initToken(TOKEN_EOF, NULL);
         }
     }
+}
+
+token_T* lexerCollectNumber(lexer_T* lexer) {
+    char buffer[256];
+    int i = 0;
+    while (lexerActualCharIsNum(lexer)) {
+        buffer[i++] = lexer->c;
+        lexerAdvance(lexer);
+    }
+    buffer[i] = '\0';
+
+    if (lexerActualCharIsWhiteSpace(lexer)) {
+        lexerSkipWhiteSpace(lexer);
+    }
+    char* value = strdup(buffer);
+    return initToken(TOKEN_NUMBER, value);
 }
 
 token_T* lexerAdvanceWithToken(lexer_T* lexer, token_T* token) {

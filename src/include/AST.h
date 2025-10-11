@@ -10,12 +10,18 @@ typedef struct AST_STRUCT {
         AST_FUNCTION_CALL,
         AST_STRING,
         AST_COMPOUND, //list of statements
+        AST_BINOP,
+        AST_NUMBER,
         AST_NOOP
     } type;
 
     /*  VARIABLE DEFINITION */
     char* variableDefName;
+    char* value;
+    char op;
     struct AST_STRUCT* variableDefValue;
+    struct AST_STRUCT* left;
+    struct AST_STRUCT* right;
 
     /*  VARIABLE */
     char* variableName;

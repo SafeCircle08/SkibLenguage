@@ -7,10 +7,17 @@ AST_T* initAST(int type) {
 
     /*  VARIABLE DEFINITION */
     newAst->variableDefName = (void*)0;
-    newAst->variableDefValue = (void*)0;;
+    newAst->variableDefValue = (void*)0;
+    newAst->value = (void*)0;
+    newAst->op = ' ';
+    newAst->variableDefValue = (void*)0;
+    newAst->left = (void*)0;
+    newAst->right = (void*)0;
 
     /*  VARIABLE */
-    newAst->variableName = (void*)0;;
+    newAst->variableName = (void*)0;
+
+
 
     /* FUNCTION CALL */
     newAst->functionDefName = (void*)0;;

@@ -167,6 +167,7 @@ AST_T* parserParseExpr(parser_T* parser) {
     switch (parser->currentToken->type) {
         case TOKEN_STRING: return parserParseString(parser);
         case TOKEN_ID: return parserParseId(parser);
+        case TOKEN_NUMBER: return parserParseOperation(parser);
         default:
             const char* GREEN = "\x1b[31m";
             const char* RESET = "\x1b[0m";
@@ -176,8 +177,38 @@ AST_T* parserParseExpr(parser_T* parser) {
     }
 }
 
-AST_T* parserParseFactor(parser_T* parser) {
+AST_T* parserParseOperation(parser_T* parser) {
+    AST_T* left = parserParseFactor(parser);
+    while (parser->currentToken->type == TOKEN_PLUS) {
+        parserEatExpectedToken(parser, TOKEN_PLUS);
+        AST_T* right = parserParseFactor(parser);
+        AST_T* sum = calloc(1, sizeof(AST_T));
+        sum->type =  AST_NUMBER;
+        sum->op = '+';
+        sum->left = left;
+        sum->right = right;
+        left = sum;
+    }
 
+    return left;
+}
+
+AST_T* parserParseSum(parser_T* parser) {
+
+}
+
+
+AST_T* parserParseFactor(parser_T* parser) {
+    if (parser->currentToken->type == TOKEN_NUMBER) {
+        parserEatExpectedToken(parser, TOKEN_NUMBER);
+        AST_T* astNum = calloc(1, sizeof(AST_T));
+        astNum->type = AST_NUMBER;
+        astNum->value = parser->prevToken->value;
+        return astNum;
+    }
+
+    printf("Expecting a number!\n");
+    exit(1);
 }
 AST_T* parserParseTerm(parser_T* parser) {
 

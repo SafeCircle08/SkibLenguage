@@ -20,6 +20,7 @@ static AST_T* builtInPrintMethod(visitor_T* visitor, AST_T** arguments, int argu
                     printf("%s", visitedArg->stringValue);
                 }
                 break;
+            case AST_NUMBER: printf("%s", visitedArg->value); break;
             default: error("<<<< Invalid datatype error >>>>\n", true);
         }
     }
@@ -38,6 +39,10 @@ void visitorIncreaseVariablesDefSize(visitor_T* visitor) {
 }
 /* ------------------------------------------------------- */
 
+AST_T* visitorVisitNumber(visitor_T* visitor, AST_T* node) {
+    return node;
+}
+
 visitor_T* initVisitor() {
     visitor_T* visitor = calloc(1, sizeof(visitor_T));
     visitor->variablesDefinitions = (void*)0;
@@ -52,6 +57,7 @@ AST_T* visitorVisit(visitor_T* visitor, AST_T* node) {
         case AST_FUNCTION_CALL: return visitorVisitFunctionCall(visitor, node);
         case AST_STRING: return visitorVisitString(visitor, node);
         case AST_COMPOUND: return visitorVisitCompound(visitor, node);
+        case AST_NUMBER: return visitorVisitNumber(visitor, node);
         case AST_NOOP: return node;
     }
     error("<<<< Invalid node encountered error >>>>\n", true);
@@ -102,6 +108,8 @@ AST_T* visitorVisitFunctionCall(visitor_T* visitor, AST_T* node) {
 AST_T* visitorVisitString(visitor_T* visitor, AST_T* node) {
     return node;
 }
+
+
 
 AST_T* visitorVisitCompound(visitor_T* visitor, AST_T* node) {
     for (int i = 0; i < node->compoundSize; i++) {

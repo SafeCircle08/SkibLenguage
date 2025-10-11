@@ -16,5 +16,6 @@ AST_T* visitorVisitVarDef(visitor_T* visitor, AST_T* node);
 AST_T* visitorVisitFunctionCall(visitor_T* visitor, AST_T* node);
 AST_T* visitorVisitString(visitor_T* visitor, AST_T* node);
 AST_T* visitorVisitCompound(visitor_T* visitor, AST_T* node);
+AST_T* visitorVisitBinOp(visitor_T* visitor, AST_T* node);
 
 #endif //VISITOR_H

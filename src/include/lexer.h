@@ -18,5 +18,7 @@ token_T* lexerCollectString(lexer_T* lexer);
 token_T* lexerCollectID(lexer_T* lexer);
 token_T* lexerAdvanceWithToken(lexer_T* lexer, token_T* token);
 char* lexerGetCurrentCharAsString(lexer_T* lexer);
+token_T* lexerCollectNumber(lexer_T* lexer);
+
 
 #endif

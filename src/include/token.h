@@ -16,6 +16,8 @@ typedef struct TOKENS_STRUCT
         TOKEN_INTER,
         TOKEN_QUOTE,
         TOKEN_COMMA,
+        TOKEN_PLUS,
+        TOKEN_NUMBER,
         TOKEN_EOF
     } type;
 

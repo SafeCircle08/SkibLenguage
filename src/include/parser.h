@@ -27,5 +27,6 @@ AST_T* parserParseFunctionCall(parser_T* parser);
 AST_T* parserParseVariable(parser_T* parser);
 AST_T* parserParseVarDef(parser_T* parser);
 AST_T* parserParseString(parser_T* parser);
+AST_T* parserParseOperation(parser_T* parser);
 
 #endif
