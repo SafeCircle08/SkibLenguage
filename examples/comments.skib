@@ -1,0 +1,5 @@
+??this is how the comments look
+??lets see if this is ignored
+def nome = "Michele"; ??define a variable
+nome = 50; ??re-assign a value to a variable
+skibout(nome, "\n"); ??print method

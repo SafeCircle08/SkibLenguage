@@ -12,7 +12,8 @@ typedef struct AST_STRUCT {
         AST_COMPOUND, //list of statements
         AST_BINOP,
         AST_NUMBER,
-        AST_NOOP
+        AST_ASSIGMENT,
+        AST_NOOP,
     } type;
 
     /*  VARIABLE DEFINITION */

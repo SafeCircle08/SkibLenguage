@@ -1,6 +1,7 @@
 #include "include/visitor.h"
 #include "include/error.h"
 #include "include/builtInStringUtils.h"
+#include "include/keyWords.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -58,9 +59,49 @@ AST_T* visitorVisit(visitor_T* visitor, AST_T* node) {
         case AST_STRING: return visitorVisitString(visitor, node);
         case AST_COMPOUND: return visitorVisitCompound(visitor, node);
         case AST_NUMBER: return visitorVisitNumber(visitor, node);
+        case AST_ASSIGMENT: return visitorVisitAssigment(visitor, node);
         case AST_NOOP: return node;
     }
     error("<<<< Invalid node encountered error >>>>\n", true);
+}
+
+void assignValue(AST_T* target, AST_T* source) {
+    target->type = source->type;
+
+    switch (source->type) {
+        case AST_NUMBER:
+            target->value = source->value; break;
+        case AST_STRING:
+            target->stringValue = source->stringValue; break;
+        case AST_VARIABLE:
+            target->variableName = strdup(source->variableName);
+        default:
+            printf("Errore in assign value\n");
+            exit(1);
+    }
+}
+
+AST_T* visitorVisitAssigment(visitor_T* visitor, AST_T* node) {
+    bool found = false;
+    int index = 0;
+    for (int i = 0; i < visitor->variablesDefinitionsSize; i++) {
+        AST_T* varDef = visitor->variablesDefinitions[i];
+        if (strcmp(varDef->variableDefName, node->variableDefName) == 0) {
+            found = true;
+            break;
+        }
+        index++;
+    }
+
+    if (!found) {
+        printf("Undefined variable assigment!\n");
+        exit(1);
+    }
+
+    AST_T* varDef = visitor->variablesDefinitions[index];
+    AST_T* value = visitorVisit(visitor, node->variableDefValue);
+    assignValue(varDef->variableDefValue, value);
+    return value;
 }
 
 AST_T* visitorVisitVarDef(visitor_T* visitor, AST_T* node) {
@@ -78,7 +119,6 @@ AST_T* visitorVisitVarDef(visitor_T* visitor, AST_T* node) {
 AST_T* visitorVisitVar(visitor_T* visitor, AST_T* node) {
     for (int i = 0; i < visitor->variablesDefinitionsSize; i++) {
         AST_T* vardef = visitor->variablesDefinitions[i];
-
         if (strcmp(vardef->variableDefName, node->variableName) == 0) {
             return visitorVisit(visitor, vardef->variableDefValue);
         }
@@ -95,7 +135,7 @@ AST_T* visitorVisitVar(visitor_T* visitor, AST_T* node) {
 
 
 AST_T* visitorVisitFunctionCall(visitor_T* visitor, AST_T* node) {
-    if (strcmp(node->functionDefName, "print") == 0) {
+    if (strcmp(node->functionDefName, PRINT_FUNC_KW) == 0) {
         AST_T** args = node->functionDefArgs;
         int argsSize = node->functionDefArgsSize;
         return builtInPrintMethod(visitor, args, argsSize);
@@ -108,8 +148,6 @@ AST_T* visitorVisitFunctionCall(visitor_T* visitor, AST_T* node) {
 AST_T* visitorVisitString(visitor_T* visitor, AST_T* node) {
     return node;
 }
-
-
 
 AST_T* visitorVisitCompound(visitor_T* visitor, AST_T* node) {
     for (int i = 0; i < node->compoundSize; i++) {

@@ -1,6 +1,6 @@
 #ifndef READSOURCECODEFILE_H
 #define READSOURCECODEFILE_H
 
-char* readFileLines(const char* filePath);
+char* readFileLines(char* fileDirectory, char* fileName);
 
 #endif

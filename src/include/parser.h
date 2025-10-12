@@ -22,6 +22,8 @@ AST_T* parserParseExpr(parser_T* parser);
 AST_T* parserParseFactor(parser_T* parser);
 AST_T* parserParseTerm(parser_T* parser);
 
+
+AST_T* parserParseAssigment(parser_T* parser);
 AST_T* parserParseId(parser_T* parser);
 AST_T* parserParseFunctionCall(parser_T* parser);
 AST_T* parserParseVariable(parser_T* parser);

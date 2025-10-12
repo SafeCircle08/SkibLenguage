@@ -4,6 +4,7 @@
 typedef struct TOKENS_STRUCT
 {
     enum {
+        TOKEN_COMMENT,
         TOKEN_ID,
         TOKEN_SEMI,
         TOKEN_STRING,
@@ -20,10 +21,10 @@ typedef struct TOKENS_STRUCT
         TOKEN_NUMBER,
         TOKEN_EOF
     } type;
-
+    int tokenLine;
     char* value;
 } token_T;
 
-token_T* initToken(int type, char* value);
+token_T* initToken(int type, char* value, int line);
 
 #endif

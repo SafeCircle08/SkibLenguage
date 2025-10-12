@@ -1,4 +1,2 @@
-var n1 = 22;
-var n2 = 57;
-print("Number 1: ", n1, "\n", "Number 2: ", n2, "\n");
-print("Program finished!\n");
+def yassAge = 16;
+skibout(yassAge, "\n");

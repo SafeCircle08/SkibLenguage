@@ -1,12 +1,20 @@
 #include "include/fileRead.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
-char* readFileLines(const char* filePath) {
+char* readFileLines(char* fileDirectory, char* fileName) {
     char* buffer = 0;
     long length;
 
+    char filePath[256];
+
+    strcpy(filePath, fileDirectory);
+    strcat(filePath, "\\");
+    strcat(filePath, fileName);
+
     FILE* f = fopen(filePath, "r");
+
     if (f) {
         fseek(f, 0, SEEK_END);
         length = ftell(f);

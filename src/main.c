@@ -18,7 +18,7 @@ void codeExecutedWithNoErrors() {
 int main(int argc, char* argv[]) {
 	if (argc < 2) { printHelp(); }
 
-	lexer_T* lexer = initLexer(readFileLines(argv[1]));
+	lexer_T* lexer = initLexer(readFileLines(argv[1], argv[2]));
 
 	parser_T* parser = initParser(lexer);
 	AST_T* source = parserParse(parser);
@@ -26,5 +26,6 @@ int main(int argc, char* argv[]) {
 	visitorVisit(visitor, source);
 
 	codeExecutedWithNoErrors();
+	printf("Source code lines: %d\n", lexer->line);
 	return 0;
 }

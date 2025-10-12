@@ -1,6 +1,7 @@
 #include "include/parser.h"
 #include "include/parserUtils.h"
 #include "include/error.h"
+#include "include/keyWords.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -55,6 +56,7 @@ AST_T* parserParseStatement(parser_T* parser) {
 
 //This function returns a list of nodes (compound)
 AST_T* parserParseStatements(parser_T* parser) {
+
     AST_T* compound = initAST(AST_COMPOUND);
     compound->compoundValue = calloc(1, sizeof(struct AST_T*));
 
@@ -64,7 +66,7 @@ AST_T* parserParseStatements(parser_T* parser) {
 
     //The first check after the first statement is parsed
     if (!parserTypeIsTheWanted(parser, TOKEN_SEMI)) {
-        printf("Forgot a ';' somewhere...\n");
+        printf("Forgot a ';' at line <%d>\n", parser->currentToken->tokenLine);
         exit(-1);
     }
 
@@ -86,8 +88,7 @@ AST_T* parserParseStatements(parser_T* parser) {
     //If it doesnt find semi, it means the prev token is not semi, so it
     //exit the program (error)
     if (parser->prevToken->type != TOKEN_SEMI) {
-        printf("prev token: %d\n", parser->prevToken->type);
-        printf("Forgot a ';' somewhere...\n");
+        printf("Forgot a ';' at line <%d>\n", parser->prevToken->tokenLine);
         exit(-1);
     }
     return compound;
@@ -97,7 +98,7 @@ AST_T* parserParseStatements(parser_T* parser) {
 /*---------- PARSER PARSER SPECIFIC TOKENS-------------*/
 
 AST_T* parserParseId(parser_T* parser) {
-    if (strcmp(parser->currentToken->value, "var") == 0) {
+    if (strcmp(parser->currentToken->value, DEFINE_VAR_KW) == 0) {
         return parserParseVarDef(parser);
     } else {
         return parserParseVariable(parser);
@@ -119,13 +120,28 @@ AST_T* parserParseVarDef(parser_T* parser) {
 AST_T* parserParseVariable(parser_T* parser) {
     char* varName = parser->currentToken->value;
     parserEatExpectedToken(parser, TOKEN_ID);
+
     if (parserTypeIsTheWanted(parser, TOKEN_LPAREN)) {
         return parserParseFunctionCall(parser);
+    }
+
+    if (parserTypeIsTheWanted(parser, TOKEN_EQUALS)) {
+        return parserParseAssigment(parser);
     }
 
     AST_T* astVariable = initAST(AST_VARIABLE);
     astVariable->variableName = varName;
     return astVariable;
+}
+
+AST_T* parserParseAssigment(parser_T* parser) {
+    char* refVarName = parser->prevToken->value;
+    parserEatExpectedToken(parser, TOKEN_EQUALS);
+    AST_T* varValue = parserParseExpr(parser);
+    AST_T* varAssigment = initAST(AST_ASSIGMENT);
+    varAssigment->variableDefName = refVarName;
+    varAssigment->variableDefValue = varValue;
+    return varAssigment;
 }
 
 AST_T* parserParseString(parser_T* parser) {
@@ -171,7 +187,12 @@ AST_T* parserParseExpr(parser_T* parser) {
         default:
             const char* GREEN = "\x1b[31m";
             const char* RESET = "\x1b[0m";
-            printf("%sInvalid expression!\nBecause of token type <%d>!%s\n", GREEN, parser->prevToken->type,RESET);
+            printf("%sInvalid expression!\nBecause of token type <%d> at line <%d>!%s\n",
+                GREEN,
+                parser->prevToken->type,
+                parser->prevToken->tokenLine,
+                RESET
+            );
             exit(1); //be careful here
             return initAST(AST_NOOP);
     }
@@ -207,7 +228,7 @@ AST_T* parserParseFactor(parser_T* parser) {
         return astNum;
     }
 
-    printf("Expecting a number!\n");
+    printf("Expecting a number at line <%d>!\n", parser->currentToken->tokenLine);
     exit(1);
 }
 AST_T* parserParseTerm(parser_T* parser) {
